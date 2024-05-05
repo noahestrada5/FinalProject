@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Colorado Whitewater</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.0/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.0/css/all.css">
+
+<style>
+  
+  h1 {
+			position: absolute;
+			margin-top: 0;
+			top: 10px;
+			left: 45px;
+			font-size: 3em;
+			font-family: "Titillium Web", sans-serif;
+			letter-spacing: .04em;
+			padding: 10px 15px;
+			background: rgba(256, 256, 256);
+			border: 1px solid rgb(162, 156, 156);
+			border-radius: 3px;
+			z-index: 800;
+		}
+#map {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+      cursor: pointer;
+		}
+
+.marker-color-1 {font-size: 15px;}
+
+.marker-color-2 {font-size: 15px;}
+
+section {
+  font-family: 'Titillium Web', sans-serif;
+			position: absolute;
+			bottom: 0;
+			left: 10px;
+			width: 280px;
+			margin: 20px auto;
+			padding: 0 15px;
+			background: rgba(256, 256, 256);
+			border: 1px solid grey;
+			border-radius: 3px;
+			z-index: 800;
+
+      
+		}
+
+    .legend {
+    line-height: 40px;
+    font-size: 16px;
+    width: 190px;
+    color: #333333;
+    padding: 6px 8px;
+    background: white;
+    background: rgba(255,255,255,0.5);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+ 
+.legend i {
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.9;
+}
+ 
+.legend img {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    float: left;
+}
+ 
+.legend p {
+    font-size: 14px;
+    line-height: 20px;
+    margin: 0;
+}
+
+.legend {
+
+font-family: 'Titillium Web', sans-serif;
+
+}
+img {
+  width: 100%;
+
+}
+
+
+section1 {
+			position: relative;
+			bottom: 0;
+			left: 10px;
+      top: 100px;
+			width: 137px;
+			margin: 20px auto;
+			padding: 0 15px;
+			background: none;
+			border: 1px solid rgba(128, 128, 128, 0);
+			border-radius: 3px;
+			z-index: 800;
+      opacity: 25%;
+
+      
+		}
+</style>
+
+<script src="https://unpkg.com/leaflet@1.7.0/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.4/chroma.min.js"></script>
+
+</head>
+
+<body>
+
+<h1>Where's The Whitewater?</h1>
+  
+
+
+
+<div id="map"></div>
+<section1>
+<img src="assets/Colorado.png"  style="width:128px;height:128px;" >
+
+</section1>
+
+<section>
+
+  <p>Colorado rafting trips begin each spring, when gravity and sunshine draw Colorado’s beloved winter snow down from the high country and into Colorado rivers for some of the country’s most amazing adventures. Find yourself on a <a href="https://www.colorado.com/articles/complete-guide-whitewater-rafting-colorado">Colorado Rafting trip</a> passing by five 14ers on the Browns Canyon portion of the Arkansas River, carving narrow sections of the Cache la Poudre River, glimpsing Gold Rush relics on Clear Creek, looking up at the massively high Royal Gorge Bridge from the Arkansas River or floating down mild stretches of the Colorado River near Grand Junction and Glenwood Springs.</p>
+      
+  <p>Map and text authored by Noah Estrada and Colorado Tourism Office &copy</p>
+
+
+
+</section>
+
+
+
+<script>
+
+
+var mymap = L.map('map', {
+center: [39.11033298739643, -106.70458677152905], 
+zoom: 8, 
+maxZoom: 18,
+minZoom: 7,
+detectRetina: true 
+});
+
+
+
+var Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+})
+.addTo(mymap)
+
+// data points for clinics
+
+var Clinics = null;
+
+ Clinics = L.geoJson.ajax("assets/Clinics.geojson", {
+ pointToLayer: function(feature, latlng) {
+ return L.marker(latlng, {icon: L.divIcon({className: 'fa-solid fa-graduation-cap marker-color-1'.toString() })});
+   },
+   onEachFeature: function (feature, layer) {
+      layer.bindPopup(
+      '</br></b></big></u><br><b>Event: </b>' + feature.properties.Name + 
+      '</br></b></big></u><br><b>Dates: </b>' + feature.properties.Dates + 
+      '</br></b></big></u><br><b>Contact Information: </b>' + feature.properties.ContactInformation);
+  },
+  
+ }).addTo(mymap);
+
+// data points for outfitters
+
+ var Outfitters = null;
+
+ Outfitters = L.geoJson.ajax("assets/Outfitters.geojson", {
+ pointToLayer: function(feature, latlng) {
+ return L.marker(latlng, {icon: L.divIcon({className: 'fa-solid fa-water marker-color-2'.toString() })});
+   },
+   onEachFeature: function (feature, layer) {
+      layer.bindPopup(
+      '</br></b></big></u><br><b>Outfitter Name: </b>' + feature.properties.name + 
+      '</br></b></big></u><br><b>Link to Website: </b>' + feature.properties.link + 
+      '</br></b></big></u><br><b>Phone: </b>' + feature.properties.phone);
+  },
+ }).addTo(mymap);
+
+ var Streams = null;
+ 
+Streams = L.geoJson.ajax("assets/Streams.geojson", {
+pointToLayer: function(feature, latlng) {
+  },
+  onEachFeature: function (feature, layer) {
+      layer.bindPopup(
+      '</br></b></big></u><br><b>Stream Name: </b>' + feature.properties.Name);
+  },
+
+}).addTo(mymap);
+
+
+
+
+
+//working on legend
+
+var legend = L.control({position: 'topright'});
+
+legend.onAdd = function () {
+ 
+ // Create Div Element and Populate it with HTML
+ var div = L.DomUtil.create('div', 'legend');
+//this line provides the legend title for the airbnb colored symbols
+ //the next 3 lines call the airbnb icon along with its proper color
+ //notice the names of the Airbnb property types listed within the <p> tags at the end of the lines
+ div.innerHTML += '<i class="fa-solid fa-graduation-cap marker-color-1"></i><p>Educational Opportunities</p>';
+ div.innerHTML += '<i class="fa-solid fa-water marker-color-2"></i><p>Rafting Outfitters</p>';
+ // Return the Legend div containing the HTML content
+ return div;
+};
+
+legend.addTo(mymap);
+
+
+L.control.scale({position: 'bottomright'}).addTo(mymap);
+
+
+
+</script>
+</body>
+</html>
